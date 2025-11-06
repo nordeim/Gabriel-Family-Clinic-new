@@ -1,0 +1,141 @@
+# 🏥 Gabriel Family Clinic Healthcare Platform
+# Docker Compose configuration for production deployment
+
+version: '3.8'
+
+services:
+  # ========================================
+  # HEALTHCARE PLATFORM FRONTEND
+  # ========================================
+  gabriel-clinic-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+      args:
+        - NODE_ENV=production
+    container_name: gabriel-clinic-frontend
+    restart: unless-stopped
+    
+    # Environment configuration
+    env_file:
+      - .env.docker
+    
+    # Port mapping (internal:external)
+    ports:
+      - "3000:3000"
+    
+    # Healthcare compliance: run as non-root user
+    user: "1001:1001"
+    
+    # Health check for container orchestration
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Resource limits for production stability
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Security settings for healthcare compliance
+    security_opt:
+      - no-new-privileges:true
+    
+    # Network settings
+    networks:
+      - gabriel-clinic-network
+    
+    # Volume mounts for persistent data
+    volumes:
+      - uploads_data:/app/public/uploads
+      - next_cache:/app/.next/cache
+    
+    # Labels for healthcare platform identification
+    labels:
+      - "healthcare.platform=gabriel-clinic"
+      - "environment=production"
+      - "compliance=HIPAA"
+
+  # ========================================
+  # OPTIONAL: REDIS CACHE (Future Enhancement)
+  # ========================================
+  # Uncomment if implementing Redis caching
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: gabriel-clinic-redis
+  #   restart: unless-stopped
+  #   
+  #   # Security configuration
+  #   command: redis-server --requirepass ${REDIS_PASSWORD:-secure-redis-password}
+  #   ports:
+  #     - "6379:6379"
+  #   
+  #   volumes:
+  #     - redis_data:/data
+  #   
+  #   networks:
+  #     - gabriel-clinic-network
+  #   
+  #   # Healthcare compliance: run as non-root user
+  #   user: "999:999"
+
+# ========================================
+# VOLUMES FOR PERSISTENT DATA
+# ========================================
+volumes:
+  uploads_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/lib/gabriel-clinic/uploads
+  
+  next_cache:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/lib/gabriel-clinic/next-cache
+  
+  # Future Redis volume (if implemented)
+  # redis_data:
+  #   driver: local
+
+# ========================================
+# DOCKER NETWORK CONFIGURATION
+# ========================================
+networks:
+  gabriel-clinic-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: gabriel-clinic-br0
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
+
+# ========================================
+# HEALTHCARE COMPLIANCE NOTES
+# ========================================
+# - Container runs as non-root user (1001:1001)
+# - Resource limits prevent DoS attacks
+# - Health checks ensure service availability
+# - Logging configured for audit trails
+# - Network isolation for security
+# - Volumes for data persistence and backups

@@ -1,12 +1,11 @@
-// Client-side Supabase Client
+// Server-side Supabase Client
 // Gabriel Family Clinic Healthcare Platform
-// For use in Client Components
+// For use in Server Components
 
-'use client';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
-import { createBrowserClient } from '@supabase/ssr';
-
-// Type-safe database helpers
+// Reuse the same database types
 export type Database = {
   public: {
     Tables: {
@@ -71,10 +70,25 @@ export type Database = {
   };
 };
 
-// Create Supabase client for browser components
+// Create Supabase client for server components
 export function createClient() {
-  return createBrowserClient(
+  const cookieStore = cookies();
+  
+  return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+        set(name: string, value: string, options: any) {
+          cookieStore.set({ name, value, ...options });
+        },
+        remove(name: string, options: any) {
+          cookieStore.set({ name, value: '', ...options });
+        },
+      },
+    }
   );
 }
