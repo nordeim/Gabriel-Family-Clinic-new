@@ -96,7 +96,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
             ? (e: React.KeyboardEvent<HTMLDivElement>) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  onClick?.(e as React.MouseEvent<HTMLDivElement>);
+                  onClick?.(e as unknown as React.MouseEvent<HTMLDivElement>);
                 }
               }
             : undefined
@@ -164,15 +164,18 @@ CardHeader.displayName = "CardHeader";
 export const CardTitle = React.forwardRef<
   HTMLHeadingElement,
   React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <h3
     ref={ref}
     className={cn(
       "text-xl font-semibold leading-none tracking-tight text-neutral-900",
       className
     )}
+    aria-label={typeof children === 'string' ? children : 'Card title'}
     {...props}
-  />
+  >
+    {children}
+  </h3>
 ));
 CardTitle.displayName = "CardTitle";
 

@@ -67,8 +67,8 @@ export default function Setup2FAPage() {
         setSecret(data.data.secret);
         setStep('verify');
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to setup 2FA');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to setup 2FA');
     } finally {
       setLoading(false);
     }
@@ -108,8 +108,8 @@ export default function Setup2FAPage() {
       } else {
         setError('Invalid verification code. Please try again.');
       }
-    } catch (err: any) {
-      setError(err.message || 'Verification failed');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Verification failed');
     } finally {
       setLoading(false);
     }

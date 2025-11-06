@@ -63,7 +63,6 @@ export default function SecurityDashboardPage() {
       }
 
       setLoading(false);
-      loadSecurityData();
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to check admin access';
       setError(errorMessage);

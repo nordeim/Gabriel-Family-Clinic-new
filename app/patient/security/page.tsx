@@ -76,32 +76,6 @@ export default function SecurityPage() {
     loadSecurityData();
   }, [loadSecurityData]);
 
-      // Load 2FA status
-      const { data: twoFactorData } = await supabase.functions.invoke('two-factor-auth', {
-        body: { action: 'get_status' },
-        headers: { Authorization: `Bearer ${session.access_token}` }
-      });
-
-      if (twoFactorData?.data) {
-        setTwoFactorEnabled(twoFactorData.data.enabled);
-      }
-
-      // Load active sessions
-      const { data: sessionsData } = await supabase.functions.invoke('session-manager', {
-        body: { action: 'get_active_sessions' },
-        headers: { Authorization: `Bearer ${session.access_token}` }
-      });
-
-      if (sessionsData?.data?.sessions) {
-        setActiveSessions(sessionsData.data.sessions);
-      }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load security data');
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function terminateSession(sessionId: string) {
     setError('');
     setSuccess('');
@@ -123,8 +97,8 @@ export default function SecurityPage() {
 
       setSuccess('Session terminated successfully');
       loadSecurityData();
-    } catch (err: any) {
-      setError(err.message || 'Failed to terminate session');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to terminate session');
     }
   }
 
@@ -156,8 +130,8 @@ export default function SecurityPage() {
 
       setSuccess('All other sessions terminated successfully');
       loadSecurityData();
-    } catch (err: any) {
-      setError(err.message || 'Failed to terminate sessions');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to terminate sessions');
     }
   }
 

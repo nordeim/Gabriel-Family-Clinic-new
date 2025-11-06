@@ -142,26 +142,38 @@ export const Modal = ({
     };
   }, [isOpen]);
 
-  // Handle outside click
-  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.target === event.currentTarget && !preventOutsideClick) {
-      onClose();
-    }
-  };
+  // Handle outside click and escape key
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !preventEscapeClose) {
+        onClose();
+      }
+    };
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      const modalContent = modalRef.current;
+      if (modalContent && !modalContent.contains(target) && !preventOutsideClick) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose, preventEscapeClose, preventOutsideClick]);
 
   if (!isOpen) return null;
-
-  const handleBackdropKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Escape' && !preventEscapeClose) {
-      onClose();
-    }
-  };
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-in fade-in-0 duration-200"
-      onClick={handleBackdropClick}
-      onKeyDown={handleBackdropKeyDown}
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'modal-title' : undefined}

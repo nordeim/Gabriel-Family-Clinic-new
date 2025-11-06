@@ -5,4 +5,4 @@
  */
 
 export { Alert, AlertTitle, AlertDescription, MedicalAlert } from './alert';
-export type { AlertProps, AlertTitleProps, AlertDescriptionProps, MedicalAlertProps } from './alert';
+export type { AlertProps, MedicalAlertProps } from './alert';

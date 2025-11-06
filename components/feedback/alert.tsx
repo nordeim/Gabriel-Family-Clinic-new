@@ -109,8 +109,12 @@ export interface AlertProps
   icon?: React.ReactNode;
 }
 
-const getIcon = (variant: 'info' | 'success' | 'warning' | 'error' | 'medical' | undefined, size: 'sm' | 'md' | 'lg' | undefined) => {
-  const iconClass = cn(iconVariants({ variant, size }));
+const getIcon = (variant: 'info' | 'success' | 'warning' | 'error' | 'medical' | undefined | null, size: 'sm' | 'md' | 'lg' | undefined | null) => {
+  if (!variant) return null;
+  
+  // Use default 'md' size when size is null or undefined
+  const resolvedSize = size || 'md';
+  const iconClass = cn(iconVariants({ variant, size: resolvedSize }));
 
   switch (variant) {
     case 'success':

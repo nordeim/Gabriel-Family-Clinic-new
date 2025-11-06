@@ -30,7 +30,7 @@ function SignInForm() {
       const { error: signInError, data } = await signIn(email, password);
 
       if (signInError) {
-        setError(signInError.message || 'Failed to sign in. Please check your credentials.');
+        setError(signInError || 'Failed to sign in. Please check your credentials.');
         setIsLoading(false);
         return;
       }

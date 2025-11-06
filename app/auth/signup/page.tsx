@@ -58,7 +58,7 @@ export default function SignUpPage() {
       );
 
       if (signUpError) {
-        setError(signUpError.message || 'Failed to create account. Please try again.');
+        setError(signUpError || 'Failed to create account. Please try again.');
         setIsLoading(false);
         return;
       }
