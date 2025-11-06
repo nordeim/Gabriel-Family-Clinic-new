@@ -1,0 +1,275 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Healthcare Platform Root Variables */
+  :root {
+    /* Light mode colors with WCAG AAA compliance */
+    --background: 248 250 252; /* Warm neutral-50 */
+    --foreground: 15 23 42; /* Neutral-900 */
+    
+    /* Professional Blue */
+    --primary: 30 64 175; /* Primary-800 */
+    --primary-foreground: 255 255 255;
+    
+    /* Emerald for success */
+    --success: 16 185 129; /* Emerald-500 */
+    --success-foreground: 255 255 255;
+    
+    /* Error states */
+    --error: 220 38 38;
+    --error-foreground: 255 255 255;
+    
+    /* Warning states */
+    --warning: 245 158 11;
+    --warning-foreground: 255 255 255;
+    
+    /* Neutral states */
+    --muted: 241 245 249; /* Neutral-100 */
+    --muted-foreground: 71 85 105; /* Neutral-600 */
+    
+    /* Border colors */
+    --border: 226 232 240; /* Neutral-200 */
+    --border-focus: 30 64 175; /* Primary-800 */
+    
+    /* Shadows for elevation */
+    --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.16);
+  }
+
+  /* Disable dark mode for healthcare compliance and consistency */
+  * {
+    @apply border-neutral-200;
+  }
+
+  /* Base body styles */
+  body {
+    @apply bg-neutral-50 text-neutral-900 antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    /* Increased base font size for elderly users */
+    font-size: 18px;
+    line-height: 1.5;
+    /* Smooth scrolling */
+    scroll-behavior: smooth;
+  }
+
+  /* Headings with appropriate contrast */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-neutral-900;
+  }
+
+  h1 {
+    @apply text-4xl;
+  }
+
+  h2 {
+    @apply text-3xl;
+  }
+
+  h3 {
+    @apply text-2xl;
+  }
+
+  h4 {
+    @apply text-xl;
+  }
+
+  h5 {
+    @apply text-lg;
+  }
+
+  h6 {
+    @apply text-base;
+  }
+
+  /* Links with accessible focus states */
+  a {
+    @apply text-primary-800 underline-offset-4 transition-colors;
+  }
+
+  a:hover {
+    @apply text-primary-700 underline;
+  }
+
+  a:focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary-800 rounded;
+  }
+}
+
+@layer components {
+  /* Accessible focus styles for interactive elements */
+  .focus-accessible {
+    @apply focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-800 focus-visible:ring-2 focus-visible:ring-primary-800 focus-visible:ring-offset-2;
+  }
+
+  /* Elderly-friendly button base */
+  .btn-base {
+    @apply min-h-touch min-w-touch px-6 py-3 text-base font-medium rounded-lg transition-all duration-200;
+    @apply focus-accessible;
+  }
+
+  /* Card component with accessible elevation */
+  .card {
+    @apply bg-white rounded-xl border border-neutral-200 shadow-soft;
+  }
+
+  /* Skip to main content link for screen readers */
+  .skip-link {
+    @apply absolute -top-full left-0 bg-primary-800 text-white px-4 py-2 z-50;
+    @apply focus:top-0;
+  }
+}
+
+@layer utilities {
+  /* Text balance for headings */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Visually hidden but accessible to screen readers */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Remove animations for users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    body {
+      @apply bg-white text-black;
+    }
+
+    .btn-base {
+      @apply border-2 border-black;
+    }
+  }
+
+  /* Ensure minimum touch target size */
+  .touch-target {
+    @apply min-h-touch min-w-touch;
+  }
+
+  /* Accessible table styles */
+  .table-accessible {
+    @apply w-full border-collapse;
+  }
+
+  .table-accessible th {
+    @apply bg-neutral-100 text-left font-semibold p-4 border-b-2 border-neutral-300;
+  }
+
+  .table-accessible td {
+    @apply p-4 border-b border-neutral-200;
+  }
+
+  .table-accessible tr:hover {
+    @apply bg-neutral-50;
+  }
+}
+
+/* Print styles for medical records */
+@media print {
+  body {
+    @apply bg-white text-black;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  .card {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+}
+
+
+/* Animation utilities for performance optimization */
+@layer utilities {
+  /* Fade in animation */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out;
+  }
+
+  /* Slide up animation */
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.6s ease-out forwards;
+    opacity: 0;
+  }
+
+  /* Slide in from left */
+  @keyframes slide-in-left {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-slide-in-left {
+    animation: slide-in-left 0.6s ease-out;
+  }
+
+  /* Slide in from right */
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.6s ease-out;
+  }
+}

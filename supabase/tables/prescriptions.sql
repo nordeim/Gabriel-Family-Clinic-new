@@ -1,0 +1,22 @@
+CREATE TABLE prescriptions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    patient_id UUID NOT NULL,
+    doctor_id UUID NOT NULL,
+    appointment_id UUID,
+    medical_record_id UUID,
+    prescription_date DATE NOT NULL,
+    medications JSONB NOT NULL DEFAULT '[]'::jsonb,
+    diagnosis TEXT,
+    notes TEXT,
+    is_dispensed BOOLEAN NOT NULL DEFAULT false,
+    dispensed_at TIMESTAMP WITH TIME ZONE,
+    dispensed_by UUID,
+    valid_until DATE,
+    is_repeatable BOOLEAN NOT NULL DEFAULT false,
+    repeat_count INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT TIMEZONE('Asia/Singapore',
+    NOW()),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT TIMEZONE('Asia/Singapore',
+    NOW()),
+    created_by UUID NOT NULL
+);

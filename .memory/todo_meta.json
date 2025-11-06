@@ -1,0 +1,76 @@
+{
+  "todos": {
+    "Coordinator": {
+      "1": {
+        "id": "1",
+        "content": "Master Planning & Architecture Analysis",
+        "details": "Create comprehensive master implementation plan with detailed phase breakdown, sub-plans, checklists, and file structures for the Gabriel Family Clinic healthcare platform.",
+        "status": "completed",
+        "priority": "high"
+      },
+      "2": {
+        "id": "2",
+        "content": "Phase 1: Project Foundation & Environment Setup",
+        "details": "Initialize Next.js 14 project with TypeScript, Tailwind CSS v4, and core dependencies. Set up project structure, configuration files, and development environment.",
+        "status": "completed",
+        "priority": "high"
+      },
+      "3": {
+        "id": "3",
+        "content": "Phase 2: Design System & Component Library Foundation",
+        "details": "Implement the tri-tone color palette, typography system, accessibility tokens, and base component architecture following WCAG AAA standards.",
+        "status": "completed",
+        "priority": "high"
+      },
+      "4": {
+        "id": "4",
+        "content": "Phase 3: Core UI Components Development",
+        "details": "Build elderly-friendly UI components (18px base font, 44px+ touch targets) with Radix UI primitives and Framer Motion animations.",
+        "status": "completed",
+        "priority": "high"
+      },
+      "5": {
+        "id": "5",
+        "content": "Phase 4: Database Schema & Backend Integration",
+        "details": "Implement Supabase database with complete PostgreSQL schema, RLS policies, and edge functions for healthcare operations.",
+        "status": "completed",
+        "priority": "high"
+      },
+      "6": {
+        "id": "6",
+        "content": "Phase 5: Main Application Pages & Features",
+        "details": "Develop all healthcare platform pages: appointments, patient records, doctor dashboard, booking system with Singapore localization.",
+        "status": "completed",
+        "priority": "high"
+      },
+      "7": {
+        "id": "7",
+        "content": "Phase 6: Authentication & Security Implementation",
+        "details": "Implement Supabase Auth with healthcare-compliant security, patient privacy features, and role-based access control.",
+        "status": "completed",
+        "priority": "high"
+      },
+      "8": {
+        "id": "8",
+        "content": "Phase 7: SEO & Performance Optimization",
+        "details": "Implement healthcare-specific SEO optimization, structured data, performance optimization (<300KB first load), and accessibility testing.",
+        "status": "completed",
+        "priority": "medium"
+      },
+      "9": {
+        "id": "9",
+        "content": "Phase 8: Testing & Quality Assurance",
+        "details": "Implement comprehensive testing suite: Jest unit tests, Playwright E2E tests, axe-core accessibility testing, cross-browser testing.",
+        "status": "completed",
+        "priority": "medium"
+      },
+      "10": {
+        "id": "10",
+        "content": "Phase 9: Production Deployment & Final Polish",
+        "details": "Deploy to production with static export optimization, final testing, and deployment validation.",
+        "status": "completed",
+        "priority": "medium"
+      }
+    }
+  }
+}

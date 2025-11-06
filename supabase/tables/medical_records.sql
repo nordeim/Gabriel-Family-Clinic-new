@@ -1,0 +1,23 @@
+CREATE TABLE medical_records (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    patient_id UUID NOT NULL,
+    appointment_id UUID,
+    doctor_id UUID NOT NULL,
+    record_date DATE NOT NULL,
+    chief_complaint TEXT NOT NULL,
+    vital_signs JSONB DEFAULT '{}'::jsonb,
+    symptoms TEXT,
+    diagnosis TEXT,
+    treatment TEXT,
+    lab_results TEXT,
+    imaging_results TEXT,
+    notes TEXT,
+    follow_up_required BOOLEAN NOT NULL DEFAULT false,
+    follow_up_date DATE,
+    is_confidential BOOLEAN NOT NULL DEFAULT false,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT TIMEZONE('Asia/Singapore',
+    NOW()),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT TIMEZONE('Asia/Singapore',
+    NOW()),
+    created_by UUID NOT NULL
+);

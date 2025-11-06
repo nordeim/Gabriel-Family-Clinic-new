@@ -1,0 +1,38 @@
+# Gabriel Family Clinic - Robots.txt
+# Healthcare-specific crawling rules
+
+# Allow all search engines
+User-agent: *
+Allow: /
+
+# Disallow private patient areas
+Disallow: /patient/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
+
+# Allow crawling of public services and information
+Allow: /services/
+Allow: /doctors/
+Allow: /about
+Allow: /contact
+
+# Crawl delay for healthcare sites (be gentle)
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://gabrielfamilyclinic.sg/sitemap.xml
+
+# Google-specific rules
+User-agent: Googlebot
+Allow: /
+Disallow: /patient/
+Disallow: /admin/
+Crawl-delay: 1
+
+# Bing-specific rules
+User-agent: Bingbot
+Allow: /
+Disallow: /patient/
+Disallow: /admin/
+Crawl-delay: 1
