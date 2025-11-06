@@ -109,8 +109,8 @@ export interface AlertProps
   icon?: React.ReactNode;
 }
 
-const getIcon = (variant: string | null | undefined, size: string | null | undefined) => {
-  const iconClass = cn(iconVariants({ variant: variant as any, size: size as any }));
+const getIcon = (variant: 'info' | 'success' | 'warning' | 'error' | 'medical' | undefined, size: 'sm' | 'md' | 'lg' | undefined) => {
+  const iconClass = cn(iconVariants({ variant, size }));
 
   switch (variant) {
     case 'success':
@@ -243,9 +243,7 @@ export const Alert = ({
 /**
  * Alert Title Component
  */
-export interface AlertTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {}
-
-export const AlertTitle = ({ className, children, ...props }: AlertTitleProps) => {
+export const AlertTitle = ({ className, children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
   return (
     <h4 className={cn('font-semibold leading-tight mb-1', className)} {...props}>
       {children}
@@ -256,9 +254,7 @@ export const AlertTitle = ({ className, children, ...props }: AlertTitleProps) =
 /**
  * Alert Description Component
  */
-export interface AlertDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {}
-
-export const AlertDescription = ({ className, children, ...props }: AlertDescriptionProps) => {
+export const AlertDescription = ({ className, children, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => {
   return (
     <p className={cn('leading-relaxed opacity-90', className)} {...props}>
       {children}

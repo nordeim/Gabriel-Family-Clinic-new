@@ -2,12 +2,12 @@
 if (typeof window === 'undefined') {
   // Only run in server environment
   try {
-    if (typeof (global as any).self === 'undefined') {
-      (global as any).self = global;
+    if (typeof (globalThis as Record<string, unknown>).self === 'undefined') {
+      (globalThis as Record<string, unknown>).self = globalThis;
     }
   } catch {
     // Gracefully handle if 'self' check fails
-    (global as any).self = global;
+    (globalThis as Record<string, unknown>).self = globalThis;
   }
 }
 

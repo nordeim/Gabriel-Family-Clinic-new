@@ -1,6 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+interface DoctorData {
+  id: string;
+  user_id: string;
+  specialty_id: string;
+  users: {
+    full_name: string;
+  };
+}
+
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getCurrentUser } from '@/lib/supabase/auth';
@@ -92,7 +101,7 @@ export default function BookAppointmentPage() {
         .eq('is_active', true);
 
       if (docData) {
-        const doctorsWithNames = docData.map((d: any) => ({
+        const doctorsWithNames = docData.map((d: DoctorData) => ({
           id: d.id,
           full_name: (d.users as { full_name?: string })?.full_name || 'Unknown',
           specialty_id: d.specialty_id,

@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -32,11 +32,7 @@ export default function SecurityPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  useEffect(() => {
-    loadSecurityData();
-  }, []);
-
-  async function loadSecurityData() {
+  const loadSecurityData = useCallback(async () => {
     setLoading(true);
     try {
       const supabase = createClient();
@@ -48,6 +44,37 @@ export default function SecurityPage() {
 
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
+
+      // Load 2FA status
+      const { data: twoFactorData } = await supabase.functions.invoke('two-factor-auth', {
+        body: { action: 'get_status' },
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+
+      if (twoFactorData?.data) {
+        setTwoFactorEnabled(twoFactorData.data.enabled);
+      }
+
+      // Load active sessions
+      const { data: sessionsData } = await supabase.functions.invoke('session-manager', {
+        body: { action: 'get_active_sessions' },
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+
+      if (sessionsData?.data?.sessions) {
+        setActiveSessions(sessionsData.data.sessions);
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load security data';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, [router]);
+
+  useEffect(() => {
+    loadSecurityData();
+  }, [loadSecurityData]);
 
       // Load 2FA status
       const { data: twoFactorData } = await supabase.functions.invoke('two-factor-auth', {

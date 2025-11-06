@@ -3,7 +3,7 @@
 export interface HealthcareSchema {
   '@context': string;
   '@type': string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // Medical service schema

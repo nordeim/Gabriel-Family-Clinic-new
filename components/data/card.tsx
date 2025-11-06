@@ -93,10 +93,10 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         onClick={onClick}
         onKeyDown={
           isClickable
-            ? (e) => {
+            ? (e: React.KeyboardEvent<HTMLDivElement>) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  onClick?.(e as any);
+                  onClick?.(e as React.MouseEvent<HTMLDivElement>);
                 }
               }
             : undefined

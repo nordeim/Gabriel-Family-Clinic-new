@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -19,21 +19,26 @@ export default function Setup2FAPage() {
   const [secret, setSecret] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ id: string; email: string } | null>(null);
+
+  const checkAuth = useCallback(async () => {
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/auth/signin');
+        return;
+      }
+      setUser({ id: user.id, email: user.email || '' });
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to check authentication';
+      setError(errorMessage);
+    }
+  }, [router]);
 
   useEffect(() => {
     checkAuth();
-  }, []);
-
-  async function checkAuth() {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      router.push('/auth/signin');
-      return;
-    }
-    setUser(user);
-  }
+  }, [checkAuth]);
 
   async function setupTOTP() {
     setLoading(true);

@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Card } from '@/components/data/card';
@@ -41,41 +41,37 @@ export default function SecurityDashboardPage() {
   const [error, setError] = useState('');
   const [timeRange, setTimeRange] = useState('24h');
 
-  useEffect(() => {
-    checkAdminAccess();
-  }, []);
+  const checkAdminAccess = useCallback(async () => {
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/auth/signin');
+        return;
+      }
 
-  useEffect(() => {
-    if (!loading) {
+      // Check if user is admin
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle() as { data: { role: string } | null };
+
+      if (!userData || userData.role !== 'admin') {
+        router.push('/patient');
+        return;
+      }
+
+      setLoading(false);
       loadSecurityData();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to check admin access';
+      setError(errorMessage);
+      setLoading(false);
     }
-  }, [timeRange]);
+  }, [router]);
 
-  async function checkAdminAccess() {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      router.push('/auth/signin');
-      return;
-    }
-
-    // Check if user is admin
-    const { data: userData } = await supabase
-      .from('users')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle() as { data: { role: string } | null };
-
-    if (!userData || userData.role !== 'admin') {
-      router.push('/patient');
-      return;
-    }
-
-    setLoading(false);
-    loadSecurityData();
-  }
-
-  async function loadSecurityData() {
+  const loadSecurityData = useCallback(async () => {
     try {
       const supabase = createClient();
       const { data: { session } } = await supabase.auth.getSession();
@@ -103,10 +99,21 @@ export default function SecurityDashboardPage() {
       if (incidentsData?.data?.incidents) {
         setActiveIncidents(incidentsData.data.incidents.slice(0, 10));
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load security data');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load security data';
+      setError(errorMessage);
     }
-  }
+  }, [timeRange]);
+
+  useEffect(() => {
+    checkAdminAccess();
+  }, [checkAdminAccess]);
+
+  useEffect(() => {
+    if (!loading) {
+      loadSecurityData();
+    }
+  }, [timeRange, loadSecurityData, loading]);
 
   function getSeverityColor(severity: string) {
     switch (severity) {

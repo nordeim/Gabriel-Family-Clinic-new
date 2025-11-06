@@ -151,10 +151,17 @@ export const Modal = ({
 
   if (!isOpen) return null;
 
+  const handleBackdropKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape' && !preventEscapeClose) {
+      onClose();
+    }
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-in fade-in-0 duration-200"
       onClick={handleBackdropClick}
+      onKeyDown={handleBackdropKeyDown}
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'modal-title' : undefined}

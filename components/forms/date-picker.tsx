@@ -273,8 +273,6 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
               helperText && helperId
             )}
             aria-required={required}
-            aria-expanded={isOpen}
-            aria-controls={calendarId}
           />
 
           {/* Calendar Icon */}
@@ -367,7 +365,6 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
                         isDisabled && 'opacity-30 cursor-not-allowed hover:bg-transparent'
                       )}
                       aria-label={formatDate(day)}
-                      aria-selected={isSelected || undefined}
                     >
                       {format(day, 'd')}
                     </button>

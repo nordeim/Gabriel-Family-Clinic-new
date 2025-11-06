@@ -66,9 +66,9 @@ export async function signIn(email: string, password: string) {
     }
 
     return { data, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Sign in error:', error);
-    return { data: null, error: error.message };
+    return { data: null, error: error instanceof Error ? error.message : 'Unknown error occurred' };
   }
 }
 
@@ -113,9 +113,9 @@ export async function signUp(email: string, password: string, userData: {
     }
 
     return { data, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Sign up error:', error);
-    return { data: null, error: error.message };
+    return { data: null, error: error instanceof Error ? error.message : 'Unknown error occurred' };
   }
 }
 
@@ -132,9 +132,9 @@ export async function signOut() {
     }
 
     return { error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Sign out error:', error);
-    return { error: error.message };
+    return { error: error instanceof Error ? error.message : 'Unknown error occurred' };
   }
 }
 
@@ -153,9 +153,9 @@ export async function resetPassword(email: string) {
     }
 
     return { data, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Reset password error:', error);
-    return { data: null, error: error.message };
+    return { data: null, error: error instanceof Error ? error.message : 'Unknown error occurred' };
   }
 }
 
@@ -174,9 +174,9 @@ export async function updatePassword(newPassword: string) {
     }
 
     return { data, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Update password error:', error);
-    return { data: null, error: error.message };
+    return { data: null, error: error instanceof Error ? error.message : 'Unknown error occurred' };
   }
 }
 
@@ -212,9 +212,9 @@ export async function getPatientRecord(userId: string) {
     }
 
     return { data, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Get patient record error:', error);
-    return { data: null, error: error.message };
+    return { data: null, error: error instanceof Error ? error.message : 'Unknown error occurred' };
   }
 }
 
@@ -235,8 +235,8 @@ export async function getDoctorRecord(userId: string) {
     }
 
     return { data, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Get doctor record error:', error);
-    return { data: null, error: error.message };
+    return { data: null, error: error instanceof Error ? error.message : 'Unknown error occurred' };
   }
 }

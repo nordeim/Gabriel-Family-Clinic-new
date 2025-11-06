@@ -206,7 +206,7 @@ export function validateVitalSigns(vitalSigns: {
 /**
  * Format medical record for display
  */
-export function formatMedicalRecord(record: any): string {
+export function formatMedicalRecord(record: Record<string, unknown>): string {
   const parts: string[] = [];
 
   if (record.chief_complaint) {
