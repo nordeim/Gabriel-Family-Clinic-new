@@ -1,0 +1,119 @@
+# 🏥 Gabriel Family Clinic - Docker Ignore Rules
+# Exclude unnecessary files to optimize Docker build context
+
+# ========================================
+# DEVELOPMENT FILES
+# ========================================
+.git/
+.gitignore
+README.md
+.github/
+*.md
+
+# ========================================
+# NODE MODULES & DEPENDENCIES
+# ========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ========================================
+# BUILD ARTIFACTS (Recreated in Docker)
+# ========================================
+.next/
+dist/
+build/
+out/
+
+# ========================================
+# ENVIRONMENT FILES
+# ========================================
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+# Keep .env.docker for container deployment
+
+# ========================================
+# DEVELOPMENT CONFIGURATIONS
+# ========================================
+.eslintcache
+.prettierrc
+prettier.config.js
+jest.config.js
+jest.setup.js
+
+# ========================================
+# TESTING & QUALITY ASSURANCE
+# ========================================
+tests/
+__tests__/
+test/
+*.test.*
+*.spec.*
+*.a11y.test.*
+*.healthcare.test.*
+*.security.test.*
+coverage/
+.nyc_output/
+
+# ========================================
+# PLAYWRIGHT TESTING
+# ========================================
+playwright-report/
+test-results/
+
+# ========================================
+# DOCUMENTATION
+# ========================================
+docs/
+documentation/
+*.md
+
+# ========================================
+# TOOLS & SCRIPTS
+# ========================================
+scripts/
+tools/
+build-custom.sh
+build.sh
+
+# ========================================
+# SUPABASE (Backend handled separately)
+# ========================================
+supabase/migrations/
+supabase/functions/
+
+# ========================================
+# IDE & EDITOR FILES
+# ========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ========================================
+# OS & CACHE FILES
+# ========================================
+.DS_Store
+Thumbs.db
+*.log
+logs/
+
+# ========================================
+# DOCKER FILES (Self-referential)
+# ========================================
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# ========================================
+# DEVELOPMENT TOOLS
+# ========================================
+.vercel
+--store-dir
