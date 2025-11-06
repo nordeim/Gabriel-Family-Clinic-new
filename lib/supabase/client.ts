@@ -4,7 +4,7 @@
 
 'use client';
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClientComponentClient } from '@supabase/ssr';
 
 // Type-safe database helpers
 export type Database = {

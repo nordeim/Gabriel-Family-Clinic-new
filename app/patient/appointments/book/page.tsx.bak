@@ -92,7 +92,7 @@ export default function BookAppointmentPage() {
         .eq('is_active', true);
 
       if (docData) {
-        const doctorsWithNames = docData.map((d: any) => ({
+        const doctorsWithNames = docData.map(d => ({
           id: d.id,
           full_name: (d.users as { full_name?: string })?.full_name || 'Unknown',
           specialty_id: d.specialty_id,

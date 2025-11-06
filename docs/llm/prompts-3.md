@@ -4,7 +4,19 @@ Please meticulously review the attached system prompt, PRD, PAD, project briefs 
 
 ---
 
+Please meticulously review the attached system prompt, PRD, PAD, the suggested plans and the suggested Prisma Schema for the project. Then meticulously plan and create the codebase.
+
+---
+
 awesome understanding and meticulous planning! Yes, please meticulously plan and proceed in logical phases. For each phase, please meticulously plan to create the sub-plan for the phase before proceeding according to it. Please think deeper and think harder to deeply explore thoroughly and systematically how you would re-imagine the codebase, then think how you will break it down into practical phase with a checklist and file list for each phase. then meticulously create a master implementation plan. remember to save the master execution plan and all sub-plans as you proceed from phase to phase.
+
+---
+
+please meticulously review the new build error attached. then do a deep-dive investigation of the root cause.
+
+---
+
+awesome job so far! please meticulous review the new build error and then think deeper and think harder to deeply explore thoroughly and systematically what could be the root cause.
 
 ---
 
