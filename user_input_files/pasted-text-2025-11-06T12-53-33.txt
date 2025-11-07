@@ -1,0 +1,576 @@
+# Build Error Analysis & Resolution Plan
+
+## Executive Summary
+
+I've identified a critical build error occurring during the "Collecting page data" phase for `/admin/security/dashboard`. The error is a `ReferenceError: self is not defined` in the server-side Supabase module. This is a common issue when client-side JavaScript code attempts to run in a Node.js server environment where the `self` global is not defined.
+
+## Deep-Dive Investigation
+
+### Root Cause Analysis
+
+The error occurs in the `.next/server/supabase.js` file, which is a compiled version of your Supabase client code. The issue is that Supabase's client library is trying to access the `self` global variable, which exists in browsers and Web Workers but not in Node.js server environments.
+
+This typically happens when:
+1. Supabase client code is imported in a server component or server-side code path
+2. The Supabase client isn't properly configured for server-side usage
+3. There's a mismatch between client and server environment handling
+
+### Files Affected
+
+Based on the error trace and code review, the primary issue is in:
+- `./app/admin/security/dashboard/page.tsx` - The page that's failing during build
+- `./lib/supabase/client.ts` - Likely the Supabase client configuration
+
+Secondary issues include numerous TypeScript warnings that should be addressed:
+- Multiple `@typescript-eslint/no-explicit-any` warnings
+- React Hook dependency warnings
+- Accessibility warnings
+
+## Solution Strategy
+
+### Phase 1: Fix the Critical Build Error
+
+1. **Fix Supabase Client Configuration**
+   - Ensure proper server/client separation
+   - Add proper environment checks
+   - Implement proper server-side Supabase client
+
+2. **Update Admin Dashboard Page**
+   - Ensure server/client components are properly separated
+   - Fix data fetching patterns for server-side rendering
+
+### Phase 2: Address TypeScript and Linting Warnings
+
+1. **Fix TypeScript Issues**
+   - Replace `any` types with proper type definitions
+   - Fix empty interface declarations
+   - Add proper type annotations
+
+2. **Fix React Hook Dependencies**
+   - Add missing dependencies or use useCallback/useMemo appropriately
+   - Ensure proper dependency arrays
+
+3. **Fix Accessibility Issues**
+   - Add proper ARIA attributes
+   - Ensure keyboard navigation support
+
+## Implementation Plan
+
+### Phase 1: Fix Critical Build Error
+
+#### Step 1: Update Supabase Client Configuration
+
+Let's first check the current Supabase client configuration:
+
+```typescript
+// lib/supabase/client.ts
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { Database } from '@/types/database'
+
+export const createClient = () => createClientComponentClient<Database>()
+```
+
+The issue is that this client is being used in server-side code. We need to ensure proper server/client separation.
+
+#### Step 2: Update Admin Dashboard Page
+
+The admin dashboard page is a client component (marked with 'use client'), but it's likely being processed in a server context during build. We need to:
+
+1. Ensure proper data fetching patterns
+2. Add proper error boundaries
+3. Implement proper loading states
+
+### Phase 2: Address TypeScript and Linting Warnings
+
+#### Step 1: Fix TypeScript Issues
+
+We'll replace all `any` types with proper type definitions:
+
+```typescript
+// Example for error handling
+catch (err: unknown) {
+  const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+  setError(errorMessage);
+}
+```
+
+#### Step 2: Fix React Hook Dependencies
+
+We'll use useCallback for functions used in useEffect:
+
+```typescript
+const checkAdminAccess = useCallback(async () => {
+  // ... existing code
+}, [router]);
+
+const loadSecurityData = useCallback(async () => {
+  // ... existing code
+}, [timeRange]);
+```
+
+#### Step 3: Fix Accessibility Issues
+
+We'll add proper ARIA attributes and keyboard navigation support.
+
+## Implementation
+
+Let's start with the critical fix for the Supabase client configuration:
+
+```typescript
+// lib/supabase/client.ts
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { Database } from '@/types/database'
+
+export const createClient = () => {
+  // Ensure we're in a browser environment
+  if (typeof window === 'undefined') {
+    throw new Error('Supabase client should only be used in client components');
+  }
+  
+  return createClientComponentClient<Database>()
+}
+```
+
+Now, let's update the admin dashboard page to handle server-side rendering properly:
+
+```typescript
+// app/admin/security/dashboard/page.tsx
+'use client';
+
+export const dynamic = 'force-dynamic';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+import { Card } from '@/components/data/card';
+import { Alert } from '@/components/feedback/alert';
+
+// ... existing interfaces
+
+export default function SecurityDashboardPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [metrics, setMetrics] = useState<SecurityMetrics | null>(null);
+  const [activeIncidents, setActiveIncidents] = useState<Incident[]>([]);
+  const [error, setError] = useState('');
+  const [timeRange, setTimeRange] = useState('24h');
+
+  const checkAdminAccess = useCallback(async () => {
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/auth/signin');
+        return;
+      }
+
+      // Check if user is admin
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle() as { data: { role: string } | null };
+
+      if (!userData || userData.role !== 'admin') {
+        router.push('/patient');
+        return;
+      }
+
+      setLoading(false);
+      loadSecurityData();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to check admin access';
+      setError(errorMessage);
+      setLoading(false);
+    }
+  }, [router]);
+
+  const loadSecurityData = useCallback(async () => {
+    try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      // Load security metrics
+      const { data: metricsData } = await supabase.functions.invoke('security-monitor', {
+        body: {
+          action: 'get_security_metrics',
+          event_data: { time_range: timeRange }
+        },
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+
+      if (metricsData?.data) {
+        setMetrics(metricsData.data);
+      }
+
+      // Load active incidents
+      const { data: incidentsData } = await supabase.functions.invoke('incident-response', {
+        body: { action: 'get_active_incidents' },
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+
+      if (incidentsData?.data?.incidents) {
+        setActiveIncidents(incidentsData.data.incidents.slice(0, 10));
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load security data';
+      setError(errorMessage);
+    }
+  }, [timeRange]);
+
+  useEffect(() => {
+    checkAdminAccess();
+  }, [checkAdminAccess]);
+
+  useEffect(() => {
+    if (!loading) {
+      loadSecurityData();
+    }
+  }, [timeRange, loadSecurityData, loading]);
+
+  // ... rest of the component
+}
+```
+
+Let's also update the other files with similar patterns:
+
+```typescript
+// app/auth/setup-2fa/page.tsx
+'use client';
+
+export const dynamic = 'force-dynamic';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/forms/input';
+import { Alert } from '@/components/feedback/alert';
+import { Card } from '@/components/data/card';
+
+export default function Setup2FAPage() {
+  const router = useRouter();
+  const [step, setStep] = useState<'setup' | 'verify' | 'backup'>('setup');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
+  const [secret, setSecret] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [backupCodes, setBackupCodes] = useState<string[]>([]);
+  const [user, setUser] = useState<{ id: string; email: string } | null>(null);
+
+  const checkAuth = useCallback(async () => {
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/auth/signin');
+        return;
+      }
+      setUser({ id: user.id, email: user.email || '' });
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to check authentication';
+      setError(errorMessage);
+    }
+  }, [router]);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  const setupTOTP = async () => {
+    setLoading(true);
+    setError('');
+    const supabase = createClient();
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No active session');
+      }
+
+      const { data, error } = await supabase.functions.invoke('two-factor-auth', {
+        body: {
+          action: 'setup_totp'
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.data) {
+        setQrCodeUrl(data.data.qr_code_url);
+        setSecret(data.data.secret);
+        setStep('verify');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to setup 2FA';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyTOTP = async () => {
+    if (verificationCode.length !== 6) {
+      setError('Please enter a 6-digit code');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    const supabase = createClient();
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No active session');
+      }
+
+      const { data, error } = await supabase.functions.invoke('two-factor-auth', {
+        body: {
+          action: 'verify_totp',
+          data: { code: verificationCode }
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.data?.enabled) {
+        setBackupCodes(data.data.backup_codes || []);
+        setStep('backup');
+      } else {
+        setError('Invalid verification code. Please try again.');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Verification failed';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ... rest of the component
+}
+```
+
+```typescript
+// app/patient/security/page.tsx
+'use client';
+
+export const dynamic = 'force-dynamic';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/data/card';
+import { Alert } from '@/components/feedback/alert';
+
+// ... existing interfaces
+
+export default function SecurityPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [activeSessions, setActiveSessions] = useState<Session[]>([]);
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const loadSecurityData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/auth/signin');
+        return;
+      }
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      // Load 2FA status
+      const { data: twoFactorData } = await supabase.functions.invoke('two-factor-auth', {
+        body: { action: 'get_status' },
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+
+      if (twoFactorData?.data) {
+        setTwoFactorEnabled(twoFactorData.data.enabled);
+      }
+
+      // Load active sessions
+      const { data: sessionsData } = await supabase.functions.invoke('session-manager', {
+        body: { action: 'get_active_sessions' },
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+
+      if (sessionsData?.data?.sessions) {
+        setActiveSessions(sessionsData.data.sessions);
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load security data';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, [router]);
+
+  useEffect(() => {
+    loadSecurityData();
+  }, [loadSecurityData]);
+
+  const terminateSession = async (sessionId: string) => {
+    setError('');
+    setSuccess('');
+
+    try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { error } = await supabase.functions.invoke('session-manager', {
+        body: {
+          action: 'terminate_session',
+          data: { session_id: sessionId }
+        },
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+
+      if (error) throw error;
+
+      setSuccess('Session terminated successfully');
+      loadSecurityData();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to terminate session';
+      setError(errorMessage);
+    }
+  };
+
+  const terminateAllOtherSessions = async () => {
+    if (!confirm('Are you sure you want to terminate all other sessions? You will remain logged in on this device.')) {
+      return;
+    }
+
+    setError('');
+    setSuccess('');
+
+    try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      // Get current session ID (simplified - in production, track this properly)
+      const currentSessionId = activeSessions.find(s => s.is_current)?.id || activeSessions[0]?.id;
+
+      const { error } = await supabase.functions.invoke('session-manager', {
+        body: {
+          action: 'terminate_all_other_sessions',
+          data: { current_session_id: currentSessionId }
+        },
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+
+      if (error) throw error;
+
+      setSuccess('All other sessions terminated successfully');
+      loadSecurityData();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to terminate sessions';
+      setError(errorMessage);
+    }
+  };
+
+  // ... rest of the component
+}
+```
+
+For the appointment booking page, let's fix the TypeScript issue:
+
+```typescript
+// app/patient/appointments/book/page.tsx
+// ... existing imports
+
+// Define proper types for the doctor data
+interface DoctorData {
+  id: string;
+  user_id: string;
+  specialty_id: string;
+  users: {
+    full_name: string;
+  };
+}
+
+// ... rest of the component
+
+async function loadInitialData() {
+  try {
+    const supabase = createClient();
+    // Load specialties
+    const { data: specData } = await supabase
+      .from('specialties')
+      .select('*')
+      .order('name');
+
+    if (specData) {
+      setSpecialties(specData);
+    }
+
+    // Load doctors
+    const { data: docData } = await supabase
+      .from('doctors')
+      .select('id, user_id, specialty_id, users(full_name)')
+      .eq('is_active', true);
+
+    if (docData) {
+      const doctorsWithNames = docData.map((d: DoctorData) => ({
+        id: d.id,
+        full_name: d.users?.full_name || 'Unknown',
+        specialty_id: d.specialty_id,
+      }));
+      setDoctors(doctorsWithNames);
+      setFilteredDoctors(doctorsWithNames);
+    }
+  } catch {
+    // Error loading data
+  }
+}
+
+// ... rest of the component
+```
+
+## Validation
+
+After implementing these changes, you should:
+
+1. Clear the Next.js build cache:
+   ```bash
+   rm -rf .next/
+   ```
+
+2. Run the build again:
+   ```bash
+   npm run build
+   ```
+
+3. Verify that the build completes successfully
+
+4. Test the affected pages to ensure they function correctly
+
+## Next Steps
+
+Once the critical build error is resolved, I recommend addressing the remaining TypeScript and linting warnings in a systematic way:
+
+1. Replace all remaining `any` types with proper type definitions
+2. Fix all React Hook dependency warnings
+3. Address all accessibility warnings
+4. Consider implementing stricter ESLint rules to prevent future issues
+
+Would you like me to provide more detailed fixes for any of the remaining warnings?

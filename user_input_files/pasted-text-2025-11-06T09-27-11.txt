@@ -1,0 +1,206 @@
+$ rm -rf .next/ node_modules/ pnpm-lock.yaml 
+
+$ npm install --prefix .
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'gabriel-family-clinic@0.1.0',
+npm warn EBADENGINE   required: { node: '20.x', npm: '9.x' },
+npm warn EBADENGINE   current: { node: 'v22.16.0', npm: '11.6.2' }
+npm warn EBADENGINE }
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+npm warn deprecated domexception@4.0.0: Use your platform's native DOMException instead
+npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 768 packages, and audited 769 packages in 2m
+
+176 packages are looking for funding
+  run `npm fund` for details
+
+1 critical severity vulnerability
+
+To address all issues, run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+$ cat package.json 
+{
+  "name": "gabriel-family-clinic",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": "20.x",
+    "npm": "9.x"
+  },
+  "packageManager": "npm@9.2.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "vercel-build": "next build",
+    "test": "jest --watch",
+    "test:ci": "jest --ci --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:accessibility": "jest --testMatch='**/*.a11y.test.{ts,tsx}'",
+    "test:healthcare": "jest --testMatch='**/*.healthcare.test.{ts,tsx}'",
+    "test:security": "jest --testMatch='**/*.security.test.{ts,tsx}'",
+    "test:all": "npm run test:ci && npm run test:e2e",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\""
+  },
+  "dependencies": {
+    "@alloc/quick-lru": "^5.2.0",
+    "@hookform/resolvers": "^3.10.0",
+    "@radix-ui/react-dialog": "^1.1.4",
+    "@radix-ui/react-dropdown-menu": "^2.1.4",
+    "@radix-ui/react-label": "^2.1.1",
+    "@radix-ui/react-select": "^2.1.4",
+    "@radix-ui/react-slot": "^1.1.1",
+    "@radix-ui/react-tabs": "^1.1.1",
+    "@radix-ui/react-toast": "^1.2.3",
+    "@radix-ui/react-tooltip": "^1.1.6",
+    "@supabase/ssr": "^0.7.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.468.0",
+    "next": "14.2.22",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-hook-form": "^7.54.0",
+    "tailwind-merge": "^2.6.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
+    "@playwright/test": "^1.49.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "axe-core": "^4.10.2",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.22",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "postcss": "^8",
+    "prettier": "^3.4.1",
+    "prettier-plugin-tailwindcss": "^0.6.9",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
+
+$ npm run build
+
+> gabriel-family-clinic@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.22
+  - Environments: .env.local
+  - Experiments (use with caution):
+    · optimizeCss
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+
+./app/admin/security/dashboard/page.tsx
+46:6  Warning: React Hook useEffect has a missing dependency: 'checkAdminAccess'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+52:6  Warning: React Hook useEffect has missing dependencies: 'loadSecurityData' and 'loading'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+106:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/auth/setup-2fa/page.tsx
+22:36  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+26:6  Warning: React Hook useEffect has a missing dependency: 'checkAuth'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+65:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+106:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/patient/appointments/book/page.tsx
+95:50  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/patient/security/page.tsx
+37:6  Warning: React Hook useEffect has a missing dependency: 'loadSecurityData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+71:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+99:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+132:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./components/data/card.tsx
+99:34  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+168:3  Warning: Headings must have content and the content must be accessible by a screen reader.  jsx-a11y/heading-has-content
+
+./components/feedback/alert.tsx
+113:59  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+113:78  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+246:18  Warning: An interface declaring no members is equivalent to its supertype.  @typescript-eslint/no-empty-object-type
+259:18  Warning: An interface declaring no members is equivalent to its supertype.  @typescript-eslint/no-empty-object-type
+
+./components/forms/date-picker.tsx
+255:11  Warning: The attribute aria-expanded is not supported by the role textbox. This role is implicit on the element input.  jsx-a11y/role-supports-aria-props
+356:21  Warning: The attribute aria-selected is not supported by the role button. This role is implicit on the element button.  jsx-a11y/role-supports-aria-props
+
+./components/overlay/modal.tsx
+155:5  Warning: Visible, non-interactive elements with click handlers must have at least one keyboard listener.  jsx-a11y/click-events-have-key-events
+155:5  Warning: Non-interactive elements should not be assigned mouse or keyboard event listeners.  jsx-a11y/no-noninteractive-element-interactions
+
+./lib/healthcare/chas-utils.ts
+209:45  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/polyfills.ts
+5:16  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/seo/structured-data.tsx
+6:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/supabase/auth.ts
+69:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+116:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+135:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+156:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+177:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+215:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+238:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/supabase/server.ts
+85:51  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+88:39  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/utils.ts
+85:46  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+85:56  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
+ ✓ Linting and checking validity of types    
+   Collecting page data  ...ReferenceError: self is not defined
+    at Object.<anonymous> (/home/project/Gabriel-Family-Clinic-new/.next/server/supabase.js:1:14)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+    at mod.require (/home/project/Gabriel-Family-Clinic-new/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:135:16)
+
+> Build error occurred
+Error: Failed to collect page data for /admin/security/dashboard
+    at /home/project/Gabriel-Family-Clinic-new/node_modules/next/dist/build/utils.js:1269:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  type: 'Error'
+}
+
+p
